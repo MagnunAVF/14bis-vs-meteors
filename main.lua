@@ -97,7 +97,7 @@ function change_background_music()
     game_over_audio:play()
 end
 
-function check_collisions()
+function check_collision_with_airplane()
     for _, meteor in pairs(meteors) do
         if has_collision(meteor.x, meteor.y, meteor.width, meteor.height,
             airplane_14bis.x, airplane_14bis.y, airplane_14bis.width, airplane_14bis.height) then
@@ -106,6 +106,24 @@ function check_collisions()
             GAME_OVER = true
         end
     end
+end
+
+function check_collision_with_shoots()
+    for i = #airplane_14bis.shoots, 1, -1 do
+        for j = #meteors, 1, -1 do
+            if has_collision(airplane_14bis.shoots[i].x, airplane_14bis.shoots[i].y, airplane_14bis.shoots[i].width, airplane_14bis.shoots[i].height,
+                meteors[j].x, meteors[j].y, meteors[j].width, meteors[j].height) then
+                table.remove(airplane_14bis.shoots, i)
+                table.remove(meteors, j)
+                break
+            end
+        end
+    end
+end
+
+function check_collisions()
+    check_collision_with_airplane()
+    check_collision_with_shoots()
 end
 
 function love.load()
