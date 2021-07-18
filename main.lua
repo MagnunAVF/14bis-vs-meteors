@@ -11,6 +11,7 @@ airplane_14bis = {
 }
 
 function destroy_airplane()
+    destruction_audio:play()
     airplane_14bis.src = "images/explosion.png"
     airplane_14bis.image = love.graphics.newImage(airplane_14bis.src)
     airplane_14bis.width = 67
@@ -68,10 +69,16 @@ function move_14bis()
     end
 end
 
+function change_background_music()
+    environment_audio:stop()
+    game_over_audio:play()
+end
+
 function check_collisions()
     for _, meteor in pairs(meteors) do
         if has_collision(meteor.x, meteor.y, meteor.width, meteor.height,
             airplane_14bis.x, airplane_14bis.y, airplane_14bis.width, airplane_14bis.height) then
+            change_background_music()
             destroy_airplane()
             GAME_OVER = true
         end
@@ -87,6 +94,12 @@ function love.load()
     background = love.graphics.newImage("images/background.png")
     airplane_14bis.image = love.graphics.newImage(airplane_14bis.src)
     meteor_img = love.graphics.newImage("images/meteor.png")
+
+    destruction_audio = love.audio.newSource("audios/destruction.wav", "static")
+    game_over_audio = love.audio.newSource("audios/game_over.wav", "static")
+    environment_audio = love.audio.newSource("audios/environment.wav", "static")
+    environment_audio:setLooping(true)
+    environment_audio:play()
 end
 
 function love.update(dt)
