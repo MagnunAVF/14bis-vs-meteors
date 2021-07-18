@@ -7,8 +7,31 @@ airplane_14bis = {
     width = 55,
     height = 63,
     x = SCREEN_WIDTH/2 - 64/2,
-    y = SCREEN_HEIGHT - 64/2
+    y = SCREEN_HEIGHT - 64/2,
+    shoots = {}
 }
+
+function shoot_action()
+    shoot_audio:play()
+    local shoot = {
+        x = airplane_14bis.x + airplane_14bis.width/2,
+        y = airplane_14bis.y,
+        width = 16,
+        height = 16
+    }
+
+    table.insert(airplane_14bis.shoots, shoot)
+end
+
+function move_shoots()
+    for i = #airplane_14bis.shoots, 1, -1 do
+        if airplane_14bis.shoots[i].y > 0 then
+            airplane_14bis.shoots[i].y = airplane_14bis.shoots[i].y - 1
+        else
+            table.remove(airplane_14bis.shoots[i])
+        end
+    end
+end
 
 function destroy_airplane()
     destruction_audio:play()
@@ -94,7 +117,9 @@ function love.load()
     background = love.graphics.newImage("images/background.png")
     airplane_14bis.image = love.graphics.newImage(airplane_14bis.src)
     meteor_img = love.graphics.newImage("images/meteor.png")
+    shoot_img = love.graphics.newImage("images/shoot.png")
 
+    shoot_audio = love.audio.newSource("audios/shoot.wav", "static")
     destruction_audio = love.audio.newSource("audios/destruction.wav", "static")
     game_over_audio = love.audio.newSource("audios/game_over.wav", "static")
     environment_audio = love.audio.newSource("audios/environment.wav", "static")
@@ -115,8 +140,16 @@ function love.update(dt)
         end
 
         move_meteors()
-
+        move_shoots()
         check_collisions()
+    end
+end
+
+function love.keypressed(key)
+    if key == "escape" then
+        love.event.quit()
+    elseif key == "space" then
+        shoot_action()
     end
 end
 
@@ -127,5 +160,9 @@ function love.draw()
 
     for _, meteor in pairs(meteors) do
         love.graphics.draw(meteor_img, meteor.x, meteor.y)
+    end
+
+    for _, shoot in pairs(airplane_14bis.shoots) do
+        love.graphics.draw(shoot_img, shoot.x, shoot.y)
     end
 end
